@@ -62,9 +62,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    console.log('Checking authentication, token:', token);
-    return !!token;
+    return !!this.getToken();
   }
 
   getCurrentUser(): User | null {
