@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { ReportsService } from '../services/reports.service';
 import { AuthService } from '../auth/auth.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -89,15 +92,22 @@ export class DashboardComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log('Form submitted');
+    console.log('Form valid:', this.reportForm.valid);
+    console.log('Form errors:', this.reportForm.errors);
+    console.log('Form value:', this.reportForm.value);
+    
     if (this.reportForm.valid) {
       this.isLoading = true;
       this.error = null;
       this.success = null;
 
       const formData = this.reportForm.value;
+      console.log('Creating report with data:', formData);
       
       this.reportsService.createReport(formData.title, formData).subscribe({
         next: (report) => {
+          console.log('Report created successfully:', report);
           this.success = 'Report created successfully!';
           this.isLoading = false;
           // Reset form after successful submission
@@ -121,14 +131,63 @@ export class DashboardComponent implements OnInit {
           });
         },
         error: (err) => {
+          console.error('Error creating report:', err);
           this.error = 'Failed to create report. Please try again.';
           this.isLoading = false;
         }
+      });
+    } else {
+      console.log('Form is invalid');
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.reportForm.controls).forEach(key => {
+        this.reportForm.get(key)?.markAsTouched();
       });
     }
   }
 
   navigateToReports(): void {
     this.router.navigate(['/reports']);
+  }
+
+  testClick(): void {
+    console.log('Test click working!');
+    alert('Click event is working!');
+  }
+
+  fillSampleData(): void {
+    this.reportForm.patchValue({
+      title: 'Sample E2B Report - Adverse Reaction',
+      
+      // Reporter Information
+      reporterGiveName: 'John',
+      reporterFamilyName: 'Smith',
+      reporterOrganization: 'City General Hospital',
+      reporterStreet: '123 Medical Center Drive',
+      reporterCity: 'New York',
+      reporterState: 'NY',
+      reporterPostcode: '10001',
+      
+      // Patient Information  
+      patientInitial: 'J.D.',
+      patientBirthdate: '1980-01-15',
+      patientAge: 44,
+      
+      // Reaction Information
+      primarySourceReaction: 'Patient experienced severe headache and nausea after taking medication',
+      reactionStartDate: '2024-12-01',
+      reactionEndDate: '2024-12-05',
+      reactionDuration: '4',
+      
+      // Drug Information
+      medicinalProduct: 'Aspirin',
+      drugBatchNumb: 'BATCH123456',
+      drugDosageText: '500mg twice daily',
+      drugDosageForm: 'Tablet',
+      drugIndication: 'Headache treatment',
+      drugStartDate: '2024-12-01',
+      drugEndDate: '2024-12-05'
+    });
+    
+    console.log('Sample data filled');
   }
 }

@@ -24,6 +24,9 @@
               <div>
                 <label class="form-label">Report Title *</label>
                 <input type="text" formControlName="title" class="form-input">
+                <div *ngIf="reportForm.get('title')?.touched && reportForm.get('title')?.errors?.['required']" class="text-red-500 text-sm mt-1">
+                  Report title is required
+                </div>
               </div>
               <div>
                 <label class="form-label">Primary Source Country *</label>
@@ -258,6 +261,75 @@
             </div>
           </div>
 
+          <!-- Debug Info -->
+          <div class="mb-6 p-4 bg-gray-100 rounded">
+            <h4 class="font-medium text-gray-900 mb-2">Form Status:</h4>
+            <p class="text-sm text-gray-600">Form Valid: {{ reportForm.valid }}</p>
+            <p class="text-sm text-gray-600">Button Disabled: {{ !reportForm.valid || isLoading }}</p>
+            
+            <div class="mt-3">
+              <h5 class="text-sm font-medium text-gray-900 mb-1">Required Fields Status:</h5>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div [class]="reportForm.get('title')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Report Title: {{ reportForm.get('title')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('reporterGiveName')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Reporter First Name: {{ reportForm.get('reporterGiveName')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('reporterFamilyName')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Reporter Last Name: {{ reportForm.get('reporterFamilyName')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('reporterOrganization')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Reporter Organization: {{ reportForm.get('reporterOrganization')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('reporterStreet')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Reporter Street: {{ reportForm.get('reporterStreet')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('reporterCity')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Reporter City: {{ reportForm.get('reporterCity')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('reporterState')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Reporter State: {{ reportForm.get('reporterState')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('reporterPostcode')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Reporter Postal Code: {{ reportForm.get('reporterPostcode')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('patientInitial')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Patient Initials: {{ reportForm.get('patientInitial')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('patientBirthdate')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Patient Birth Date: {{ reportForm.get('patientBirthdate')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('patientAge')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Patient Age: {{ reportForm.get('patientAge')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('primarySourceReaction')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Primary Reaction: {{ reportForm.get('primarySourceReaction')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('reactionStartDate')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Reaction Start Date: {{ reportForm.get('reactionStartDate')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('medicinalProduct')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Medicinal Product: {{ reportForm.get('medicinalProduct')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('drugDosageText')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Drug Dosage: {{ reportForm.get('drugDosageText')?.valid ? 'Valid' : 'Required' }}
+                </div>
+                <div [class]="reportForm.get('drugStartDate')?.valid ? 'text-green-600' : 'text-red-600'">
+                  • Drug Start Date: {{ reportForm.get('drugStartDate')?.valid ? 'Valid' : 'Required' }}
+                </div>
+              </div>
+            </div>
+
+            <button 
+              type="button" 
+              (click)="fillSampleData()" 
+              class="mt-3 px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+            >
+              Fill Sample Data (for testing)
+            </button>
+          </div>
+
           <!-- Messages -->
           <div class="mb-6">
             <div class="text-red-600 text-sm" *ngIf="error">
@@ -269,11 +341,19 @@
           </div>
 
           <!-- Submit Button -->
-          <div class="flex justify-end">
+          <div class="flex justify-end space-x-4">
+            <button
+              type="button"
+              (click)="onSubmit()"
+              class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              <span *ngIf="isLoading">Creating Report...</span>
+              <span *ngIf="!isLoading">Force Submit (Debug)</span>
+            </button>
             <button
               type="submit"
               [disabled]="!reportForm.valid || isLoading"
-              class="btn"
+              class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span *ngIf="isLoading">Creating Report...</span>
               <span *ngIf="!isLoading">Create E2B Report</span>
