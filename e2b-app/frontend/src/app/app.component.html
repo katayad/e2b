@@ -1,0 +1,36 @@
+<div class="min-h-screen bg-gray-50">
+  <nav class="bg-white shadow-lg" *ngIf="authService.isAuthenticated()">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <h1 class="text-xl font-bold text-gray-900">E2B Reports Generator</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button 
+            (click)="showMenu = !showMenu"
+            class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Menu
+          </button>
+          <div class="relative" *ngIf="showMenu">
+            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+              <a routerLink="/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+              <a routerLink="/reports" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Reports</a>
+              <a routerLink="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <button 
+                (click)="authService.logout()"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <router-outlet></router-outlet>
+  </main>
+</div>
