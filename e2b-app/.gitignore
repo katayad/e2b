@@ -211,7 +211,6 @@ frontend/Thumbs.db
 *.sqlite3
 
 # Encrypted reports storage
-reports/
 encrypted-reports/
 
 # Local environment files

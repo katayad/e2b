@@ -1,0 +1,711 @@
+<div class="max-w-6xl mx-auto py-6 sm:px-6 lg:px-8" *ngIf="!isLoading && report">
+  <div class="px-4 py-6 sm:px-0">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <button (click)="goBack()" class="text-indigo-600 hover:text-indigo-900 mb-2">
+          ← Back to Reports
+        </button>
+        <h1 class="text-3xl font-bold text-gray-900">{{ report.title }}</h1>
+        <p class="mt-2 text-gray-600">E2B(R3) Individual Case Safety Report Details</p>
+      </div>
+      <div class="flex space-x-2">
+        <button 
+          (click)="toggleView()" 
+          class="btn"
+          [class.btn-primary]="!showXmlView"
+          [class.btn-secondary]="showXmlView"
+        >
+          {{ showXmlView ? 'Human View' : 'XML View' }}
+        </button>
+        <button (click)="editReport()" class="btn btn-secondary">
+          Edit Report
+        </button>
+        <button (click)="downloadReport()" class="btn btn-secondary">
+          Download XML
+        </button>
+        <button (click)="deleteReport()" class="btn btn-danger">
+          Delete Report
+        </button>
+      </div>
+    </div>
+
+    <div class="text-red-600 text-sm mb-4" *ngIf="error">
+      {{ error }}
+    </div>
+
+    <!-- XML View -->
+    <div *ngIf="showXmlView" class="bg-white shadow rounded-lg mb-6">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">E2B(R3) XML Content</h3>
+        
+        <div *ngIf="isLoadingXml" class="text-center py-8">
+          <div class="text-gray-500">Loading XML content...</div>
+        </div>
+        
+        <div *ngIf="!isLoadingXml && xmlContent" class="relative">
+          <!-- Copy Button -->
+          <button 
+            (click)="copyXmlToClipboard()" 
+            class="absolute top-2 right-2 px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded border z-10"
+          >
+            Copy XML
+          </button>
+          
+          <!-- XML Content -->
+          <pre class="bg-gray-50 border rounded-lg p-4 overflow-x-auto text-sm font-mono whitespace-pre-wrap max-h-96 overflow-y-auto">{{ xmlContent }}</pre>
+        </div>
+        
+        <div *ngIf="!isLoadingXml && !xmlContent" class="text-center py-8">
+          <div class="text-gray-500 mb-4">XML content not available</div>
+          <button (click)="loadXmlContent()" class="btn btn-secondary">
+            Retry Loading XML
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Human-Readable View -->
+    <div *ngIf="!showXmlView">
+      <!-- Report System Information -->
+    <div class="bg-white shadow rounded-lg mb-6">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">System Information</h3>
+        <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Report ID</dt>
+            <dd class="mt-1 text-sm text-gray-900">{{ report.id }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Created Date</dt>
+            <dd class="mt-1 text-sm text-gray-900">{{ report.createdAt | date:'medium' }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Last Modified</dt>
+            <dd class="mt-1 text-sm text-gray-900">{{ report.updatedAt | date:'medium' }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Filename</dt>
+            <dd class="mt-1 text-sm text-gray-900">{{ report.filename }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div *ngIf="report.metadata">
+      <!-- N.1 Batch Information -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">N.1 Batch Information</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Batch Number</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.batchNumber) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Batch Sender ID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.batchSenderIdentifier) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Batch Receiver ID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.batchReceiverIdentifier) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Transmission Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.batchTransmissionDate) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- N.2 Message Header -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">N.2 Message Header</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Message Identifier</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.messageIdentifier) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Message Sender ID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.messageSenderIdentifier) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Message Receiver ID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.messageReceiverIdentifier) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Creation Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.messageCreationDate) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- C.1 Case Safety Report Identification -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">C.1 Case Safety Report Identification</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Sender Safety Report ID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.senderSafetyReportId) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Safety Report ID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.safetyReportId) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Report Version</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.safetyReportVersion) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Date of Creation</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.dateOfCreation) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Type of Report</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getReportTypeLabel(report.metadata.typeOfReport) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Date First Received</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.dateReportFirstReceived) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Date Most Recent</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.dateReportMostRecent) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Additional Documents</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.additionalDocuments) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Fulfil Local Criteria</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.fulfilLocalCriteria) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Worldwide Unique ID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.worldwideUniqueId) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">First Sender</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getFirstSenderLabel(report.metadata.firstSender) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Primary Source Country</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.primarySourceCountry) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- C.2 Reporter Information -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">C.2 Reporter Information</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Name</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {{ formatValue(report.metadata.reporterTitle) }} 
+                {{ formatValue(report.metadata.reporterGiveName) }} 
+                {{ formatValue(report.metadata.reporterFamilyName) }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Organization</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.reporterOrganization) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Qualification</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getQualificationLabel(report.metadata.reporterQualification) }}</dd>
+            </div>
+            <div class="sm:col-span-2">
+              <dt class="text-sm font-medium text-gray-500">Address</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {{ formatValue(report.metadata.reporterStreet) }}<br>
+                {{ formatValue(report.metadata.reporterCity) }}, {{ formatValue(report.metadata.reporterState) }} {{ formatValue(report.metadata.reporterPostcode) }}<br>
+                {{ formatValue(report.metadata.reporterCountry) }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Contact Information</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <div *ngIf="report.metadata.reporterTelephone">Tel: {{ report.metadata.reporterTelephone }}</div>
+                <div *ngIf="report.metadata.reporterFax">Fax: {{ report.metadata.reporterFax }}</div>
+                <div *ngIf="report.metadata.reporterEmail">Email: {{ report.metadata.reporterEmail }}</div>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Primary Source for Regulatory</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.primarySourceRegulatory) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- C.3 Sender Information -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">C.3 Sender Information</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Sender Type</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getSenderTypeLabel(report.metadata.senderType) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Organization</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.senderOrganization) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Person Responsible</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.personResponsible) }}</dd>
+            </div>
+            <div class="sm:col-span-2">
+              <dt class="text-sm font-medium text-gray-500">Sender Address</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {{ formatValue(report.metadata.senderAddress) }}<br>
+                {{ formatValue(report.metadata.senderCity) }}, {{ formatValue(report.metadata.senderState) }} {{ formatValue(report.metadata.senderPostcode) }}<br>
+                {{ formatValue(report.metadata.senderCountry) }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Contact Information</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <div *ngIf="report.metadata.senderTelephone">Tel: {{ report.metadata.senderTelephone }}</div>
+                <div *ngIf="report.metadata.senderFax">Fax: {{ report.metadata.senderFax }}</div>
+                <div *ngIf="report.metadata.senderEmail">Email: {{ report.metadata.senderEmail }}</div>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- C.4 Literature Reference -->
+      <div class="bg-white shadow rounded-lg mb-6" *ngIf="report.metadata.literatureReference">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">C.4 Literature Reference</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <dt class="text-sm font-medium text-gray-500">Literature Reference</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.literatureReference) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Included Documents</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.includedDocuments) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- C.5 Study Information -->
+      <div class="bg-white shadow rounded-lg mb-6" *ngIf="report.metadata.studyRegistrationNumber || report.metadata.studyName">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">C.5 Study Information</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Study Registration Number</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.studyRegistrationNumber) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Registration Country</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.studyRegistrationCountry) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Study Name</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.studyName) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Sponsor Study Number</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.sponsorStudyNumber) }}</dd>
+            </div>
+            <div class="sm:col-span-2">
+              <dt class="text-sm font-medium text-gray-500">Study Type</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.studyTypeReaction) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- D Patient Information -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">D Patient Information</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Patient Initials</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.patientInitial) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Medical Record Number</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.patientMedicalRecordNumber) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Birth Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.patientBirthdate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Age</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatAge(report.metadata.patientAge, report.metadata.patientAgeUnit) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Sex</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getSexLabel(report.metadata.patientSex) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Weight</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.patientWeight) }} kg</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Height</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.patientHeight) }} cm</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Last Menstrual Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.lastMenstrualDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Age Group</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.patientAgeGroup) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- D.7 Medical History -->
+      <div class="bg-white shadow rounded-lg mb-6" *ngIf="report.metadata.medicalHistoryText">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">D.7 Medical History</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <dt class="text-sm font-medium text-gray-500">Medical History</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.medicalHistoryText) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">MedDRA Code</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.medicalHistoryMeddra) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Start Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.medicalHistoryStartDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">End Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.medicalHistoryEndDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Concomitant Therapy</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.concomitantTherapy) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- D.8 Past Drug History -->
+      <div class="bg-white shadow rounded-lg mb-6" *ngIf="report.metadata.pastDrugName">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">D.8 Past Drug History</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Drug Name</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.pastDrugName) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">MPID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.pastDrugMpid) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Start Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.pastDrugStartDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">End Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.pastDrugEndDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Indication</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.pastDrugIndication) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Reaction</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.pastDrugReaction) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- D.9 Death Information -->
+      <div class="bg-white shadow rounded-lg mb-6" *ngIf="report.metadata.deathDate">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">D.9 Death Information</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Death Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.deathDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Death Cause</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.deathCause) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Autopsy Done</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getAutopsyLabel(report.metadata.autopsyDone) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Autopsy Cause</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.autopsyCause) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- E Adverse Reaction Information -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">E Reaction/Event Information</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <dt class="text-sm font-medium text-gray-500">Primary Source Reaction</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.primarySourceReaction) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">MedDRA PT Code</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.reactionMeddrapt) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">MedDRA LLT Code</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.reactionMeddrallt) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Start Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.reactionStartDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">End Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.reactionEndDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Duration</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatDuration(report.metadata.reactionDuration, report.metadata.reactionDurationUnit) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Outcome</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getOutcomeLabel(report.metadata.reactionOutcome) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Medical Confirmation</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.medicalConfirmation) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Reaction Country</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.reactionCountry) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- Seriousness Criteria -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">E.i.3.2 Seriousness Criteria</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Results in Death</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.seriousnessDeath) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Life Threatening</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.seriousnessLifeThreatening) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Hospitalization</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.seriousnessHospitalization) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Disabling/Incapacitating</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.seriousnessDisabling) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Congenital Anomaly</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.seriousnessCongenitalAnomali) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Other Medically Important</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getYesNoLabel(report.metadata.seriousnessOther) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- F Test Results -->
+      <div class="bg-white shadow rounded-lg mb-6" *ngIf="report.metadata.testName">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">F Test Results</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Test Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.testDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Test Name</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.testName) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Test Result</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.testResult) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Test Result Value</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.testResultValue) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Normal Range</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {{ formatValue(report.metadata.testNormalLow) }} - {{ formatValue(report.metadata.testNormalHigh) }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Unit</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.testResultUnit) }}</dd>
+            </div>
+            <div class="sm:col-span-2">
+              <dt class="text-sm font-medium text-gray-500">Test Comments</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.testComments) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- G Drug Information -->
+      <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">G Drug Information</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Drug Role</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getDrugRoleLabel(report.metadata.drugRole) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Medicinal Product</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.medicinalProduct) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">MPID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugMpid) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">PhPID</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugPhpid) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Substance Strength</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatStrength(report.metadata.substanceStrength, report.metadata.substanceStrengthUnit) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Batch Number</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugBatchNumb) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Authorization Number</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugAuthorizationNumb) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Authorization Country</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugAuthorizationCountry) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Dose</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatDose(report.metadata.drugDoseNumber, report.metadata.drugDoseUnit) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Dose Interval</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatInterval(report.metadata.drugDoseInterval, report.metadata.drugDoseIntervalUnit) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Dosage Text</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugDosageText) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Dosage Form</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugDosageForm) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Route of Administration</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getRouteLabel(report.metadata.drugAdministrationRoute) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Start Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugStartDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">End Date</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugEndDate) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Duration</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatDuration(report.metadata.drugDuration, report.metadata.drugDurationUnit) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Indication</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.drugIndication) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Action Taken</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getActionDrugLabel(report.metadata.actionDrug) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Drug Relatedness</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getDrugRelatednessLabel(report.metadata.drugRelatedness) }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Recurrence</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ getRecurrenceLabel(report.metadata.drugRecurrence) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- H Narrative Case Summary -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">H Narrative Case Summary</h3>
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6">
+            <div *ngIf="report.metadata.narrativeText">
+              <dt class="text-sm font-medium text-gray-500">Case Narrative</dt>
+              <dd class="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{{ formatValue(report.metadata.narrativeText) }}</dd>
+            </div>
+            <div *ngIf="report.metadata.reporterComments">
+              <dt class="text-sm font-medium text-gray-500">Reporter's Comments</dt>
+              <dd class="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{{ formatValue(report.metadata.reporterComments) }}</dd>
+            </div>
+            <div *ngIf="report.metadata.senderDiagnosis">
+              <dt class="text-sm font-medium text-gray-500">Sender's Diagnosis</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ formatValue(report.metadata.senderDiagnosis) }}</dd>
+            </div>
+            <div *ngIf="report.metadata.senderComments">
+              <dt class="text-sm font-medium text-gray-500">Sender's Comments</dt>
+              <dd class="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{{ formatValue(report.metadata.senderComments) }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+    </div> <!-- End Human-Readable View -->
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8" *ngIf="isLoading">
+  <div class="text-center py-12">
+    <div class="text-gray-500">Loading report...</div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8" *ngIf="!isLoading && !report">
+  <div class="text-center py-12">
+    <div class="text-gray-500 mb-4">Report not found</div>
+    <button (click)="goBack()" class="btn">
+      Back to Reports
+    </button>
+  </div>
+</div>
