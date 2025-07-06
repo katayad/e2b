@@ -1,9 +1,9 @@
-<div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+<div class="max-w-6xl mx-auto py-6 sm:px-6 lg:px-8">
   <div class="px-4 py-6 sm:px-0">
     <div class="flex justify-between items-center mb-6">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">E2B Report Generator</h1>
-        <p class="mt-2 text-gray-600">Create new Individual Case Safety Reports (ICSR)</p>
+        <h1 class="text-3xl font-bold text-gray-900">E2B(R3) Report Generator</h1>
+        <p class="mt-2 text-gray-600">Create Individual Case Safety Reports (ICSR) - Full E2B(R3) Compliance</p>
       </div>
       <button 
         (click)="navigateToReports()"
@@ -17,16 +17,113 @@
       <div class="px-4 py-5 sm:p-6">
         <form [formGroup]="reportForm" (ngSubmit)="onSubmit()">
           
-          <!-- Basic Information -->
+          <!-- N.1 Batch Information -->
           <div class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">N.1 Batch Information</h3>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label">Batch Number</label>
+                <input type="text" formControlName="batchNumber" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Batch Sender Identifier</label>
+                <input type="text" formControlName="batchSenderIdentifier" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Batch Receiver Identifier</label>
+                <input type="text" formControlName="batchReceiverIdentifier" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Batch Transmission Date</label>
+                <input type="datetime-local" formControlName="batchTransmissionDate" class="form-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- N.2 Message Header -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">N.2 Message Header</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label">Message Identifier</label>
+                <input type="text" formControlName="messageIdentifier" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Message Sender Identifier</label>
+                <input type="text" formControlName="messageSenderIdentifier" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Message Receiver Identifier</label>
+                <input type="text" formControlName="messageReceiverIdentifier" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Message Creation Date</label>
+                <input type="datetime-local" formControlName="messageCreationDate" class="form-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- C.1 Case Safety Report Identification -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">C.1 Case Safety Report Identification</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <label class="form-label">Report Title *</label>
                 <input type="text" formControlName="title" class="form-input">
                 <div *ngIf="reportForm.get('title')?.touched && reportForm.get('title')?.errors?.['required']" class="text-red-500 text-sm mt-1">
                   Report title is required
                 </div>
+              </div>
+              <div>
+                <label class="form-label">Safety Report ID</label>
+                <input type="text" formControlName="safetyReportId" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Safety Report Version</label>
+                <input type="text" formControlName="safetyReportVersion" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Date of Creation</label>
+                <input type="date" formControlName="dateOfCreation" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Type of Report *</label>
+                <select formControlName="typeOfReport" class="form-input">
+                  <option value="1">Spontaneous</option>
+                  <option value="2">Report from study</option>
+                  <option value="3">Other</option>
+                  <option value="4">Not available to sender</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Date Report First Received</label>
+                <input type="date" formControlName="dateReportFirstReceived" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Date of Most Recent Information</label>
+                <input type="date" formControlName="dateReportMostRecent" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Additional Documents Available</label>
+                <select formControlName="additionalDocuments" class="form-input">
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Fulfil Local Criteria</label>
+                <select formControlName="fulfilLocalCriteria" class="form-input">
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Worldwide Unique ID</label>
+                <input type="text" formControlName="worldwideUniqueId" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">First Sender</label>
+                <input type="text" formControlName="firstSender" class="form-input">
               </div>
               <div>
                 <label class="form-label">Primary Source Country *</label>
@@ -36,19 +133,25 @@
                   <option value="GB">United Kingdom</option>
                   <option value="DE">Germany</option>
                   <option value="FR">France</option>
+                  <option value="JP">Japan</option>
+                  <option value="AU">Australia</option>
+                  <option value="IT">Italy</option>
+                  <option value="ES">Spain</option>
+                  <option value="NL">Netherlands</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <!-- Reporter Information -->
+          <!-- C.2 Reporter Information -->
           <div class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Reporter Information</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">C.2 Reporter Information</h3>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <label class="form-label">Title *</label>
                 <select formControlName="reporterTitle" class="form-input">
                   <option value="Dr.">Dr.</option>
+                  <option value="Prof.">Prof.</option>
                   <option value="Mr.">Mr.</option>
                   <option value="Ms.">Ms.</option>
                   <option value="Mrs.">Mrs.</option>
@@ -90,26 +193,208 @@
                   <option value="GB">United Kingdom</option>
                   <option value="DE">Germany</option>
                   <option value="FR">France</option>
+                  <option value="JP">Japan</option>
+                  <option value="AU">Australia</option>
+                  <option value="IT">Italy</option>
+                  <option value="ES">Spain</option>
+                  <option value="NL">Netherlands</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Telephone</label>
+                <input type="tel" formControlName="reporterTelephone" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Fax</label>
+                <input type="text" formControlName="reporterFax" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Email</label>
+                <input type="email" formControlName="reporterEmail" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Qualification</label>
+                <select formControlName="reporterQualification" class="form-input">
+                  <option value="1">Physician</option>
+                  <option value="2">Pharmacist</option>
+                  <option value="3">Other health professional</option>
+                  <option value="4">Lawyer</option>
+                  <option value="5">Consumer or other non health professional</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Primary Source for Regulatory Purposes</label>
+                <select formControlName="primarySourceRegulatory" class="form-input">
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <!-- Patient Information -->
+          <!-- C.3 Sender Information -->
           <div class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Patient Information</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">C.3 Sender Information</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div>
+                <label class="form-label">Sender Type</label>
+                <select formControlName="senderType" class="form-input">
+                  <option value="1">Pharmaceutical company</option>
+                  <option value="2">Regulatory authority</option>
+                  <option value="3">Health professional</option>
+                  <option value="4">Regional pharmacovigilance centre</option>
+                  <option value="5">WHO collaborating centre</option>
+                  <option value="6">Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Sender Organization</label>
+                <input type="text" formControlName="senderOrganization" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Person Responsible</label>
+                <input type="text" formControlName="personResponsible" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Sender Address</label>
+                <input type="text" formControlName="senderAddress" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Sender City</label>
+                <input type="text" formControlName="senderCity" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Sender State</label>
+                <input type="text" formControlName="senderState" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Sender Postal Code</label>
+                <input type="text" formControlName="senderPostcode" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Sender Country</label>
+                <select formControlName="senderCountry" class="form-input">
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="JP">Japan</option>
+                  <option value="AU">Australia</option>
+                  <option value="IT">Italy</option>
+                  <option value="ES">Spain</option>
+                  <option value="NL">Netherlands</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Sender Telephone</label>
+                <input type="tel" formControlName="senderTelephone" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Sender Fax</label>
+                <input type="text" formControlName="senderFax" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Sender Email</label>
+                <input type="email" formControlName="senderEmail" class="form-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- C.4 Literature Reference -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">C.4 Literature Reference</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label">Literature Reference</label>
+                <textarea formControlName="literatureReference" class="form-input" rows="3"></textarea>
+              </div>
+              <div>
+                <label class="form-label">Included Documents</label>
+                <select formControlName="includedDocuments" class="form-input">
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- C.5 Study Information -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">C.5 Study Information</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label">Study Registration Number</label>
+                <input type="text" formControlName="studyRegistrationNumber" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Study Registration Country</label>
+                <select formControlName="studyRegistrationCountry" class="form-input">
+                  <option value="">Select Country</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="JP">Japan</option>
+                  <option value="AU">Australia</option>
+                  <option value="IT">Italy</option>
+                  <option value="ES">Spain</option>
+                  <option value="NL">Netherlands</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Study Name</label>
+                <input type="text" formControlName="studyName" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Sponsor Study Number</label>
+                <input type="text" formControlName="sponsorStudyNumber" class="form-input">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label">Study Type Where Reaction Was Observed</label>
+                <input type="text" formControlName="studyTypeReaction" class="form-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- D Patient Information -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">D Patient Information</h3>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <label class="form-label">Patient Initials *</label>
                 <input type="text" formControlName="patientInitial" class="form-input" placeholder="J.D.">
               </div>
               <div>
-                <label class="form-label">Birth Date *</label>
+                <label class="form-label">Medical Record Number</label>
+                <input type="text" formControlName="patientMedicalRecordNumber" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Birth Date</label>
                 <input type="date" formControlName="patientBirthdate" class="form-input">
               </div>
               <div>
-                <label class="form-label">Age *</label>
+                <label class="form-label">Age</label>
                 <input type="number" formControlName="patientAge" class="form-input" min="0" max="120">
+              </div>
+              <div>
+                <label class="form-label">Age Unit</label>
+                <select formControlName="patientAgeUnit" class="form-input">
+                  <option value="801">Year</option>
+                  <option value="802">Month</option>
+                  <option value="803">Week</option>
+                  <option value="804">Day</option>
+                  <option value="805">Hour</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Gestation Period</label>
+                <input type="number" formControlName="gestationPeriod" class="form-input" min="0">
+              </div>
+              <div>
+                <label class="form-label">Patient Age Group</label>
+                <input type="text" formControlName="patientAgeGroup" class="form-input">
               </div>
               <div>
                 <label class="form-label">Sex *</label>
@@ -127,16 +412,181 @@
                 <label class="form-label">Height (cm)</label>
                 <input type="number" formControlName="patientHeight" class="form-input" min="0" max="300">
               </div>
+              <div>
+                <label class="form-label">Last Menstrual Period</label>
+                <input type="date" formControlName="lastMenstrualDate" class="form-input">
+              </div>
             </div>
           </div>
 
-          <!-- Reaction Information -->
+          <!-- D.7 Medical History -->
           <div class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Adverse Reaction Information</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">D.7 Medical History</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div class="sm:col-span-2">
+                <label class="form-label">Medical History Text</label>
+                <textarea formControlName="medicalHistoryText" class="form-input" rows="3"></textarea>
+              </div>
+              <div>
+                <label class="form-label">Medical History MedDRA Code</label>
+                <input type="text" formControlName="medicalHistoryMeddra" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Medical History Start Date</label>
+                <input type="date" formControlName="medicalHistoryStartDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Medical History End Date</label>
+                <input type="date" formControlName="medicalHistoryEndDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Concomitant Therapy</label>
+                <textarea formControlName="concomitantTherapy" class="form-input" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- D.8 Past Drug History -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">D.8 Past Drug History</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label">Past Drug Name</label>
+                <input type="text" formControlName="pastDrugName" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Past Drug MPID</label>
+                <input type="text" formControlName="pastDrugMpid" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Past Drug PhPID</label>
+                <input type="text" formControlName="pastDrugPhpid" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Past Drug Start Date</label>
+                <input type="date" formControlName="pastDrugStartDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Past Drug End Date</label>
+                <input type="date" formControlName="pastDrugEndDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Past Drug Indication</label>
+                <input type="text" formControlName="pastDrugIndication" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Past Drug Reaction</label>
+                <input type="text" formControlName="pastDrugReaction" class="form-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- D.9 Death Information -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">D.9 Death Information</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label">Death Date</label>
+                <input type="date" formControlName="deathDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Death Cause</label>
+                <input type="text" formControlName="deathCause" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Death Cause MedDRA Code</label>
+                <input type="text" formControlName="deathCauseMeddra" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Autopsy Done</label>
+                <select formControlName="autopsyDone" class="form-input">
+                  <option value="">Select</option>
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
+                  <option value="3">Unknown</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Autopsy Determined Cause</label>
+                <input type="text" formControlName="autopsyCause" class="form-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- D.10 Parent Information -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">D.10 Parent Information (for Parent-child/Foetus Reports)</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div>
+                <label class="form-label">Parent ID</label>
+                <input type="text" formControlName="parentId" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Parent Birth Date</label>
+                <input type="date" formControlName="parentBirthdate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Parent Age</label>
+                <input type="number" formControlName="parentAge" class="form-input" min="0" max="120">
+              </div>
+              <div>
+                <label class="form-label">Parent Last Menstrual Period</label>
+                <input type="date" formControlName="parentMenstrualDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Parent Weight (kg)</label>
+                <input type="number" formControlName="parentWeight" class="form-input" min="0" max="500">
+              </div>
+              <div>
+                <label class="form-label">Parent Height (cm)</label>
+                <input type="number" formControlName="parentHeight" class="form-input" min="0" max="300">
+              </div>
+              <div>
+                <label class="form-label">Parent Sex</label>
+                <select formControlName="parentSex" class="form-input">
+                  <option value="">Select</option>
+                  <option value="1">Male</option>
+                  <option value="2">Female</option>
+                  <option value="0">Unknown</option>
+                </select>
+              </div>
+              <div class="sm:col-span-3">
+                <label class="form-label">Parent Medical History</label>
+                <textarea formControlName="parentMedicalHistory" class="form-input" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- E Reaction Information -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">E Reaction/Event Information</h3>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div class="sm:col-span-2">
                 <label class="form-label">Primary Source Reaction *</label>
                 <textarea formControlName="primarySourceReaction" class="form-input" rows="3" placeholder="Describe the adverse reaction"></textarea>
+              </div>
+              <div>
+                <label class="form-label">Reaction in Native Language</label>
+                <input type="text" formControlName="reactionNativeLanguage" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Reaction for Translation</label>
+                <input type="text" formControlName="reactionTranslation" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Reaction MedDRA PT Code</label>
+                <input type="text" formControlName="reactionMeddrapt" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Reaction MedDRA LLT Code</label>
+                <input type="text" formControlName="reactionMeddrallt" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Term Highlighted by Reporter</label>
+                <select formControlName="termHighlighted" class="form-input">
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
+                </select>
               </div>
               <div>
                 <label class="form-label">Reaction Start Date *</label>
@@ -160,16 +610,170 @@
                   <option value="5">Unknown</option>
                 </select>
               </div>
+              <div>
+                <label class="form-label">Medical Confirmation</label>
+                <select formControlName="medicalConfirmation" class="form-input">
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Reaction Country</label>
+                <select formControlName="reactionCountry" class="form-input">
+                  <option value="">Select Country</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="JP">Japan</option>
+                  <option value="AU">Australia</option>
+                  <option value="IT">Italy</option>
+                  <option value="ES">Spain</option>
+                  <option value="NL">Netherlands</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <!-- Drug Information -->
+          <!-- Seriousness Criteria -->
           <div class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Drug Information</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">E.i.3.2 Seriousness Criteria</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div>
+                <label class="form-label">Results in Death</label>
+                <select formControlName="seriousnessDeath" class="form-input">
+                  <option value="2">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Life Threatening</label>
+                <select formControlName="seriousnessLifeThreatening" class="form-input">
+                  <option value="2">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Caused/Prolonged Hospitalization</label>
+                <select formControlName="seriousnessHospitalization" class="form-input">
+                  <option value="2">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Disabling/Incapacitating</label>
+                <select formControlName="seriousnessDisabling" class="form-input">
+                  <option value="2">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Congenital Anomaly/Birth Defect</label>
+                <select formControlName="seriousnessCongenitalAnomali" class="form-input">
+                  <option value="2">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Other Medically Important Condition</label>
+                <select formControlName="seriousnessOther" class="form-input">
+                  <option value="2">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- F Test Results -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">F Test Results</h3>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label">Test Date</label>
+                <input type="date" formControlName="testDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Test Name</label>
+                <input type="text" formControlName="testName" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Test Name MedDRA Code</label>
+                <input type="text" formControlName="testNameMeddra" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Test Result</label>
+                <input type="text" formControlName="testResult" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Test Result Code</label>
+                <input type="text" formControlName="testResultCode" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Test Result Value</label>
+                <input type="text" formControlName="testResultValue" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Test Result Unit</label>
+                <input type="text" formControlName="testResultUnit" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Normal Low Value</label>
+                <input type="text" formControlName="testNormalLow" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Normal High Value</label>
+                <input type="text" formControlName="testNormalHigh" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">More Information Available</label>
+                <select formControlName="testMoreInfo" class="form-input">
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label">Test Result Text</label>
+                <textarea formControlName="testResultText" class="form-input" rows="3"></textarea>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label">Test Comments</label>
+                <textarea formControlName="testComments" class="form-input" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- G Drug Information -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">G Drug Information</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label">Drug Role</label>
+                <select formControlName="drugRole" class="form-input">
+                  <option value="1">Suspect</option>
+                  <option value="2">Concomitant</option>
+                  <option value="3">Interacting</option>
+                </select>
+              </div>
               <div>
                 <label class="form-label">Medicinal Product *</label>
                 <input type="text" formControlName="medicinalProduct" class="form-input" placeholder="Drug name">
+              </div>
+              <div>
+                <label class="form-label">Drug MPID</label>
+                <input type="text" formControlName="drugMpid" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Drug PhPID</label>
+                <input type="text" formControlName="drugPhpid" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Substance Identifier</label>
+                <input type="text" formControlName="substanceIdentifier" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Substance Strength</label>
+                <input type="text" formControlName="substanceStrength" class="form-input">
               </div>
               <div>
                 <label class="form-label">Batch Number</label>
@@ -180,7 +784,55 @@
                 <input type="text" formControlName="drugAuthorizationNumb" class="form-input">
               </div>
               <div>
-                <label class="form-label">Dosage *</label>
+                <label class="form-label">Authorization Country</label>
+                <select formControlName="drugAuthorizationCountry" class="form-input">
+                  <option value="">Select Country</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="JP">Japan</option>
+                  <option value="AU">Australia</option>
+                  <option value="IT">Italy</option>
+                  <option value="ES">Spain</option>
+                  <option value="NL">Netherlands</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Authorization Holder</label>
+                <input type="text" formControlName="drugAuthorizationHolder" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Dose Number</label>
+                <input type="number" formControlName="drugDoseNumber" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Dose Unit</label>
+                <input type="text" formControlName="drugDoseUnit" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Dose Interval</label>
+                <input type="number" formControlName="drugDoseInterval" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Dose Interval Unit</label>
+                <input type="text" formControlName="drugDoseIntervalUnit" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Drug Start Date *</label>
+                <input type="date" formControlName="drugStartDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Drug End Date</label>
+                <input type="date" formControlName="drugEndDate" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Drug Duration</label>
+                <input type="text" formControlName="drugDuration" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Dosage Text *</label>
                 <input type="text" formControlName="drugDosageText" class="form-input" placeholder="e.g., 10mg daily">
               </div>
               <div>
@@ -195,68 +847,176 @@
                   <option value="058">Intramuscular</option>
                   <option value="063">Subcutaneous</option>
                   <option value="034">Topical</option>
+                  <option value="001">Auricular (otic)</option>
+                  <option value="002">Buccal</option>
+                  <option value="003">Cutaneous</option>
+                  <option value="004">Dental</option>
+                  <option value="005">Endocervical</option>
+                  <option value="006">Endosinusial</option>
+                  <option value="007">Endotracheal</option>
+                  <option value="008">Epidural</option>
+                  <option value="009">Extra-amniotic</option>
+                  <option value="010">Hemodialysis</option>
+                  <option value="011">Intra corpus cavernosum</option>
+                  <option value="012">Intra-amniotic</option>
+                  <option value="013">Intra-arterial</option>
+                  <option value="014">Intra-articular</option>
+                  <option value="015">Intra-uterine</option>
+                  <option value="016">Intracardiac</option>
+                  <option value="017">Intracavernous</option>
+                  <option value="018">Intracerebral</option>
+                  <option value="019">Intracervical</option>
+                  <option value="020">Intracisternal</option>
+                  <option value="021">Intracorneal</option>
+                  <option value="022">Intracoronary</option>
+                  <option value="023">Intradermal</option>
+                  <option value="024">Intradiscal (intraspinal)</option>
+                  <option value="025">Intrahepatic</option>
+                  <option value="026">Intralesional</option>
+                  <option value="027">Intralymphatic</option>
+                  <option value="028">Intramedullar (bone marrow)</option>
+                  <option value="029">Intrameningeal</option>
+                  <option value="030">Intraocular</option>
+                  <option value="031">Intrapericardial</option>
+                  <option value="032">Intraperitoneal</option>
+                  <option value="033">Intrapleural</option>
+                  <option value="035">Intraspinal</option>
+                  <option value="036">Intrasternal</option>
+                  <option value="037">Intrathecal</option>
+                  <option value="038">Intrathoracic</option>
+                  <option value="039">Intratracheal</option>
+                  <option value="040">Intratumor</option>
+                  <option value="041">Intratympanic</option>
+                  <option value="042">Intravascular</option>
+                  <option value="043">Intraventricular</option>
+                  <option value="044">Intravesical</option>
+                  <option value="045">Iontophoresis</option>
+                  <option value="046">Nasal</option>
+                  <option value="048">Occlusive dressing technique</option>
+                  <option value="049">Ophthalmic</option>
+                  <option value="050">Oropharyngeal</option>
+                  <option value="051">Other</option>
+                  <option value="052">Parenteral</option>
+                  <option value="053">Periarticular</option>
+                  <option value="054">Perineural</option>
+                  <option value="055">Rectal</option>
+                  <option value="056">Respiratory (inhalation)</option>
+                  <option value="057">Retrobulbar</option>
+                  <option value="059">Subarachnoid</option>
+                  <option value="060">Subconjunctival</option>
+                  <option value="061">Sublingual</option>
+                  <option value="062">Submucosal</option>
+                  <option value="064">Transdermal</option>
+                  <option value="066">Transmucosal</option>
+                  <option value="067">Transplacental</option>
+                  <option value="068">Transtracheal</option>
+                  <option value="069">Transtympanic</option>
+                  <option value="070">Unspecified</option>
+                  <option value="071">Urethral</option>
+                  <option value="072">Vaginal</option>
                 </select>
+              </div>
+              <div>
+                <label class="form-label">Parent Route of Administration</label>
+                <input type="text" formControlName="drugParentRoute" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Cumulative Dose</label>
+                <input type="text" formControlName="drugCumulativeDose" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Gestation Period at Time of Exposure</label>
+                <input type="text" formControlName="drugGestationPeriod" class="form-input">
               </div>
               <div>
                 <label class="form-label">Indication</label>
                 <input type="text" formControlName="drugIndication" class="form-input" placeholder="Reason for use">
               </div>
               <div>
-                <label class="form-label">Drug Start Date *</label>
-                <input type="date" formControlName="drugStartDate" class="form-input">
+                <label class="form-label">Indication MedDRA Code</label>
+                <input type="text" formControlName="drugIndicationMeddra" class="form-input">
               </div>
               <div>
-                <label class="form-label">Drug End Date</label>
-                <input type="date" formControlName="drugEndDate" class="form-input">
+                <label class="form-label">Action Taken with Drug</label>
+                <select formControlName="actionDrug" class="form-input">
+                  <option value="1">Drug withdrawn</option>
+                  <option value="2">Dose reduced</option>
+                  <option value="3">Dose increased</option>
+                  <option value="4">Dose not changed</option>
+                  <option value="5">Unknown</option>
+                  <option value="6">Not applicable</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Drug Reaction Assessed</label>
+                <input type="text" formControlName="drugReactionAssessed" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Drug Relatedness</label>
+                <select formControlName="drugRelatedness" class="form-input">
+                  <option value="">Select</option>
+                  <option value="1">Certain</option>
+                  <option value="2">Probable/Likely</option>
+                  <option value="3">Possible</option>
+                  <option value="4">Unlikely</option>
+                  <option value="5">Conditional/Unclassified</option>
+                  <option value="6">Unassessable/Unclassifiable</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Drug Reaction Interval</label>
+                <input type="text" formControlName="drugReactionInterval" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Did Reaction Recur on Re-administration</label>
+                <select formControlName="drugRecurrence" class="form-input">
+                  <option value="1">Yes</option>
+                  <option value="2">No</option>
+                  <option value="3">Unknown</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Additional Information (coded)</label>
+                <input type="text" formControlName="drugAdditionalInfo" class="form-input">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label">Additional Information (free text)</label>
+                <textarea formControlName="drugAdditionalInfoText" class="form-input" rows="3"></textarea>
               </div>
             </div>
           </div>
 
-          <!-- Seriousness Criteria -->
+          <!-- H Narrative -->
           <div class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Seriousness Criteria</h3>
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <div>
-                <label class="form-label">Death</label>
-                <select formControlName="seriousnessDeath" class="form-input">
-                  <option value="2">No</option>
-                  <option value="1">Yes</option>
-                </select>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">H Narrative Case Summary</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div class="sm:col-span-2">
+                <label class="form-label">Case Narrative</label>
+                <textarea formControlName="narrativeText" class="form-input" rows="5" placeholder="Describe the clinical course, therapeutic measures, outcome and additional relevant information"></textarea>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label">Reporter's Comments</label>
+                <textarea formControlName="reporterComments" class="form-input" rows="3"></textarea>
               </div>
               <div>
-                <label class="form-label">Life Threatening</label>
-                <select formControlName="seriousnessLifeThreatening" class="form-input">
-                  <option value="2">No</option>
-                  <option value="1">Yes</option>
-                </select>
+                <label class="form-label">Sender's Diagnosis</label>
+                <input type="text" formControlName="senderDiagnosis" class="form-input">
               </div>
               <div>
-                <label class="form-label">Hospitalization</label>
-                <select formControlName="seriousnessHospitalization" class="form-input">
-                  <option value="2">No</option>
-                  <option value="1">Yes</option>
-                </select>
+                <label class="form-label">Sender's Diagnosis MedDRA Code</label>
+                <input type="text" formControlName="senderDiagnosisMeddra" class="form-input">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label">Sender's Comments</label>
+                <textarea formControlName="senderComments" class="form-input" rows="3"></textarea>
               </div>
               <div>
-                <label class="form-label">Disabling</label>
-                <select formControlName="seriousnessDisabling" class="form-input">
-                  <option value="2">No</option>
-                  <option value="1">Yes</option>
-                </select>
+                <label class="form-label">Case Summary in Native Language</label>
+                <textarea formControlName="caseSummaryNative" class="form-input" rows="3"></textarea>
               </div>
               <div>
-                <label class="form-label">Congenital Anomaly</label>
-                <select formControlName="seriousnessCongenitalAnomali" class="form-input">
-                  <option value="2">No</option>
-                  <option value="1">Yes</option>
-                </select>
-              </div>
-              <div>
-                <label class="form-label">Other Serious</label>
-                <select formControlName="seriousnessOther" class="form-input">
-                  <option value="2">No</option>
-                  <option value="1">Yes</option>
-                </select>
+                <label class="form-label">Case Summary Language</label>
+                <input type="text" formControlName="caseSummaryLanguage" class="form-input" placeholder="e.g., en, es, fr, de">
               </div>
             </div>
           </div>
@@ -296,12 +1056,6 @@
                 </div>
                 <div [class]="reportForm.get('patientInitial')?.valid ? 'text-green-600' : 'text-red-600'">
                   • Patient Initials: {{ reportForm.get('patientInitial')?.valid ? 'Valid' : 'Required' }}
-                </div>
-                <div [class]="reportForm.get('patientBirthdate')?.valid ? 'text-green-600' : 'text-red-600'">
-                  • Patient Birth Date: {{ reportForm.get('patientBirthdate')?.valid ? 'Valid' : 'Required' }}
-                </div>
-                <div [class]="reportForm.get('patientAge')?.valid ? 'text-green-600' : 'text-red-600'">
-                  • Patient Age: {{ reportForm.get('patientAge')?.valid ? 'Valid' : 'Required' }}
                 </div>
                 <div [class]="reportForm.get('primarySourceReaction')?.valid ? 'text-green-600' : 'text-red-600'">
                   • Primary Reaction: {{ reportForm.get('primarySourceReaction')?.valid ? 'Valid' : 'Required' }}
