@@ -6,8 +6,11 @@ A comprehensive web application for generating, managing, and storing Individual
 
 - **User Authentication**: Secure login and registration system
 - **E2B Report Generation**: Interactive form for creating E2B(R3) compliant XML reports
+- **FDA Validation**: Built-in validation using FDA's E2B validator API
+- **Dual View Mode**: Toggle between human-readable and XML view for reports
 - **Encrypted Storage**: Reports are stored encrypted on the filesystem with decryption keys in SQLite
 - **Report Management**: View, edit, delete, and download reports
+- **Auto-navigation**: Automatically redirect to report details after creation
 - **Pretty Interface**: Clean, responsive design using Tailwind CSS
 - **Paginated Reports List**: Organized view of all user reports
 - **Toggleable Menu**: Easy navigation between sections
@@ -132,6 +135,10 @@ npm run dev
    - Click "Create E2B Report" to generate the XML
 
 3. **Manage Reports**:
+   - After creating a report, you'll be automatically redirected to the report details page
+   - Toggle between "Human View" and "XML View" to see different formats
+   - Use the "Validate with FDA" button to check FDA compliance
+   - Download the report as XML or copy XML to clipboard
    - Click "View My Reports" to see all your reports
    - Use the reports list to view, edit, download, or delete reports
    - Click "Menu" in the navigation to access different sections
@@ -166,6 +173,7 @@ The application supports all major E2B(R3) data elements including:
 - `PUT /reports/:id` - Update report
 - `DELETE /reports/:id` - Delete report
 - `GET /reports/:id/download` - Download report as XML
+- `POST /reports/:id/validate` - Validate report with FDA E2B validator
 
 ## Development
 
@@ -242,5 +250,17 @@ This project is licensed under the ISC License.
 ## E2B(R3) Compliance
 
 This application generates E2B(R3) compliant XML files based on the ICH E2B(R3) specification. The generated reports include all required data elements and follow the proper XML schema structure for regulatory submission.
+
+### Validation
+- **FDA E2B Validator Integration**: Built-in integration with FDA's official E2B validator API
+- **Real-time Validation**: Validate reports directly from the application interface
+- **Error Reporting**: Detailed validation error messages with specific element references
+- **DTD Compliance**: XML structure follows the official E2B DTD specification
+
+### XML Features
+- **Proper DTD Declaration**: Includes required DOCTYPE declaration for FDA compliance
+- **Element Filtering**: Only includes FDA-recognized E2B elements to prevent validation errors
+- **XML Escaping**: Proper handling of special characters in XML content
+- **Date Formatting**: Correct E2B date/time formatting (CCYYMMDD and CCYYMMDDHHMMSS)
 
 For more information about E2B(R3) standards, refer to the documentation in the `docs/` directory.
