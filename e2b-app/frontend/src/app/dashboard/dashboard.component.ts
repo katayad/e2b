@@ -49,6 +49,7 @@ export class DashboardComponent implements OnInit {
       messageCreationDate: [''],
       
       // C.1 Case Safety Report Identification
+      senderSafetyReportId: [''],
       safetyReportId: [''],
       safetyReportVersion: [''],
       dateOfCreation: [''],
@@ -56,11 +57,19 @@ export class DashboardComponent implements OnInit {
       dateReportFirstReceived: [''],
       dateReportMostRecent: [''],
       additionalDocuments: ['2'], // 1=Yes, 2=No
+      documentsHeld: [''],
       fulfilLocalCriteria: ['1'], // 1=Yes, 2=No
       worldwideUniqueId: [''],
-      firstSender: [''],
+      firstSender: ['2'], // 1=Regulator, 2=Other
+      otherCaseIds: [''],
       linkedReportId: [''],
       nullificationAmendment: [''],
+      nullificationReason: [''],
+      
+      // Additional identification fields
+      receiveDate: [''],
+      receiptDate: [''],
+      companyNumber: [''],
       
       // Basic Information
       primarySourceCountry: ['US', Validators.required],
@@ -133,7 +142,9 @@ export class DashboardComponent implements OnInit {
       pastDrugStartDate: [''],
       pastDrugEndDate: [''],
       pastDrugIndication: [''],
+      pastDrugIndicationMeddra: [''],
       pastDrugReaction: [''],
+      pastDrugReactionMeddra: [''],
       
       // D.9 Death Information
       deathDate: [''],
@@ -146,6 +157,7 @@ export class DashboardComponent implements OnInit {
       parentId: [''],
       parentBirthdate: [''],
       parentAge: [''],
+      parentAgeUnit: ['801'], // 801=Year, 802=Month, 803=Week, 804=Day, 805=Hour
       parentMenstrualDate: [''],
       parentWeight: [''],
       parentHeight: [''],
@@ -162,6 +174,7 @@ export class DashboardComponent implements OnInit {
       reactionStartDate: ['', Validators.required],
       reactionEndDate: [''],
       reactionDuration: [''],
+      reactionDurationUnit: ['804'], // 804=Day
       reactionOutcome: ['1', Validators.required], // 1=Recovered/Resolved, 2=Recovering/Resolving, 3=Not recovered/Not resolved, 4=Fatal, 5=Unknown
       medicalConfirmation: ['2'], // 1=Yes, 2=No
       reactionCountry: [''],
@@ -187,29 +200,34 @@ export class DashboardComponent implements OnInit {
       drugPhpid: [''],
       substanceIdentifier: [''],
       substanceStrength: [''],
+      substanceStrengthUnit: ['mg'],
       drugBatchNumb: [''],
       drugAuthorizationNumb: [''],
       drugAuthorizationCountry: [''],
       drugAuthorizationHolder: [''],
       drugDoseNumber: [''],
-      drugDoseUnit: [''],
+      drugDoseUnit: ['mg'],
       drugDoseInterval: [''],
-      drugDoseIntervalUnit: [''],
+      drugDoseIntervalUnit: ['h'],
       drugStartDate: ['', Validators.required],
       drugEndDate: [''],
       drugDuration: [''],
+      drugDurationUnit: ['d'],
       drugDosageText: ['', Validators.required],
       drugDosageForm: [''],
       drugAdministrationRoute: ['065'], // 065=Oral
       drugParentRoute: [''],
       drugCumulativeDose: [''],
+      drugCumulativeDoseUnit: ['mg'],
       drugGestationPeriod: [''],
+      drugGestationPeriodUnit: ['wk'],
       drugIndication: [''],
       drugIndicationMeddra: [''],
       actionDrug: ['5'], // 1=Drug withdrawn, 2=Dose reduced, 3=Dose increased, 4=Dose not changed, 5=Unknown, 6=Not applicable
       drugReactionAssessed: [''],
       drugRelatedness: [''], // 1=Certain, 2=Probable/Likely, 3=Possible, 4=Unlikely, 5=Conditional/Unclassified, 6=Unassessable/Unclassifiable
       drugReactionInterval: [''],
+      drugReactionIntervalUnit: ['h'],
       drugRecurrence: ['3'], // 1=Yes, 2=No, 3=Unknown
       drugAdditionalInfo: [''],
       drugAdditionalInfoText: [''],
@@ -313,6 +331,7 @@ export class DashboardComponent implements OnInit {
       messageCreationDate: '2024-12-06T10:30:00',
       
       // C.1 Case Safety Report Identification
+      senderSafetyReportId: 'US-E2BAPP-2024-001',
       safetyReportId: 'ICSR-2024-001',
       safetyReportVersion: '1.0',
       dateOfCreation: '2024-12-06',
@@ -322,7 +341,7 @@ export class DashboardComponent implements OnInit {
       additionalDocuments: '2', // No
       fulfilLocalCriteria: '1', // Yes
       worldwideUniqueId: 'WW-UNIQUE-2024-001',
-      firstSender: 'FIRST-SENDER-123',
+      firstSender: '2', // Other
       
       // C.2 Reporter Information
       reporterGiveName: 'John',
@@ -366,6 +385,7 @@ export class DashboardComponent implements OnInit {
       patientAge: 44,
       patientAgeUnit: '801', // Year
       gestationPeriod: '',
+      gestationPeriodUnit: '803', // Week
       patientAgeGroup: 'Adult',
       patientWeight: 75,
       patientHeight: 175,
@@ -385,7 +405,9 @@ export class DashboardComponent implements OnInit {
       pastDrugStartDate: '2024-11-01',
       pastDrugEndDate: '2024-11-15',
       pastDrugIndication: 'Pain relief',
+      pastDrugIndicationMeddra: '10033371', // Pain
       pastDrugReaction: 'Mild gastric upset',
+      pastDrugReactionMeddra: '10017944', // Gastrointestinal disorder
       
       // E Reaction Information
       primarySourceReaction: 'Patient experienced severe headache, nausea, and dizziness approximately 2 hours after taking the medication. Symptoms persisted for 4 days and gradually improved after discontinuation.',
@@ -397,6 +419,7 @@ export class DashboardComponent implements OnInit {
       reactionStartDate: '2024-12-01',
       reactionEndDate: '2024-12-05',
       reactionDuration: '4',
+      reactionDurationUnit: '804', // Day
       reactionOutcome: '1', // Recovered/Resolved
       medicalConfirmation: '1', // Yes
       reactionCountry: 'US',
@@ -421,7 +444,8 @@ export class DashboardComponent implements OnInit {
       drugMpid: 'MPID-ASP-500',
       drugPhpid: 'PHPID-ASP-500',
       substanceIdentifier: 'ASP-SUBSTANCE-001',
-      substanceStrength: '500mg',
+      substanceStrength: '500',
+      substanceStrengthUnit: 'mg',
       drugBatchNumb: 'BATCH123456',
       drugAuthorizationNumb: 'NDA-021234',
       drugAuthorizationCountry: 'US',
@@ -429,22 +453,25 @@ export class DashboardComponent implements OnInit {
       drugDoseNumber: 500,
       drugDoseUnit: 'mg',
       drugDoseInterval: 12,
-      drugDoseIntervalUnit: 'hours',
+      drugDoseIntervalUnit: 'h',
       drugStartDate: '2024-12-01',
       drugEndDate: '2024-12-05',
-      drugDuration: '4 days',
+      drugDuration: '4',
+      drugDurationUnit: 'd',
       drugDosageText: '500mg twice daily with meals',
       drugDosageForm: 'Tablet',
       drugAdministrationRoute: '065', // Oral
       drugParentRoute: '',
-      drugCumulativeDose: '4000mg',
+      drugCumulativeDose: '4000',
+      drugCumulativeDoseUnit: 'mg',
       drugGestationPeriod: '',
       drugIndication: 'Headache treatment and pain relief',
       drugIndicationMeddra: '10019211', // Headache
       actionDrug: '1', // Drug withdrawn
       drugReactionAssessed: 'Headache',
       drugRelatedness: '2', // Probable/Likely
-      drugReactionInterval: '2 hours',
+      drugReactionInterval: '2',
+      drugReactionIntervalUnit: 'h',
       drugRecurrence: '3', // Unknown
       drugAdditionalInfo: 'Patient had no previous history of aspirin sensitivity',
       drugAdditionalInfoText: 'Patient reported taking medication on empty stomach despite instructions. No known drug allergies or contraindications.',
