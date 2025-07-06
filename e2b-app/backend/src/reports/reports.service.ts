@@ -195,12 +195,13 @@ export class ReportsService {
 <messagedate>${data.messageDate ? this.formatE2BDateTime(data.messageDate) : currentDateTime}</messagedate>
 </ichicsrmessageheader>
 <safetyreport>
-<safetyreportversion>1</safetyreportversion>
+<safetyreportversion>${this.escapeXml(data.reportVersion || '1')}</safetyreportversion>
 <safetyreportid>${this.escapeXml(safetyReportId)}</safetyreportid>
+${data.icsrSafetyReportId ? `<companynumb>${this.escapeXml(data.icsrSafetyReportId)}</companynumb>` : ''}
 <primarysourcecountry>${this.escapeXml(data.primarySourceCountry || 'US')}</primarysourcecountry>
 ${data.occurCountry ? `<occurcountry>${this.escapeXml(data.occurCountry)}</occurcountry>` : ''}
 <transmissiondateformat>102</transmissiondateformat>
-<transmissiondate>${currentDate}</transmissiondate>
+<transmissiondate>${data.transmissionDate ? this.formatE2BDate(data.transmissionDate) : currentDate}</transmissiondate>
 <reporttype>${this.escapeXml(data.reportType || '1')}</reporttype>
 <serious>${(data.seriousnessDeath === '1' || data.seriousnessLifeThreatening === '1' || data.seriousnessHospitalization === '1' || data.seriousnessDisabling === '1' || data.seriousnessCongenitalAnomali === '1' || data.seriousnessOther === '1') ? '1' : '2'}</serious>
 <seriousnessdeath>${this.escapeXml(data.seriousnessDeath || '2')}</seriousnessdeath>
@@ -211,9 +212,12 @@ ${data.occurCountry ? `<occurcountry>${this.escapeXml(data.occurCountry)}</occur
 <seriousnessother>${this.escapeXml(data.seriousnessOther || '2')}</seriousnessother>
 <receiptdateformat>102</receiptdateformat>
 <receiptdate>${data.dateReportFirstReceived ? this.formatE2BDate(data.dateReportFirstReceived) : currentDate}</receiptdate>
-<additionaldocument>2</additionaldocument>
+${data.dateMostRecentInfo ? `<receiptdate>${this.formatE2BDate(data.dateMostRecentInfo)}</receiptdate>` : ''}
+<additionaldocument>${this.escapeXml(data.additionalDocuments || '2')}</additionaldocument>
 <documentlist/>
 <fulfillexpeditecriteria>${this.escapeXml(data.fulfilLocalCriteria || '1')}</fulfillexpeditecriteria>
+${data.worldwideUniqueId ? `<companynumb>${this.escapeXml(data.worldwideUniqueId)}</companynumb>` : ''}
+${data.firstSender ? `<authoritynumb>${this.escapeXml(data.firstSender)}</authoritynumb>` : ''}
 ${data.duplicate ? `<duplicate>${this.escapeXml(data.duplicate)}</duplicate>` : ''}
 ${data.linkedReportNumber ? `<linkedreport><linkreportnumb>${this.escapeXml(data.linkedReportNumber)}</linkreportnumb></linkedreport>` : ''}
 <primarysource>
@@ -226,9 +230,14 @@ ${data.reporterState ? `<reporterstate>${this.escapeXml(data.reporterState)}</re
 ${data.reporterPostcode ? `<reporterpostcode>${this.escapeXml(data.reporterPostcode)}</reporterpostcode>` : ''}
 <reportercountry>${this.escapeXml(data.reporterCountry || data.primarySourceCountry || 'US')}</reportercountry>
 <qualification>${this.escapeXml(data.reporterQualification || '1')}</qualification>
+${data.reporterTel ? `<reportertel>${this.escapeXml(data.reporterTel)}</reportertel>` : ''}
+${data.reporterEmailAddress ? `<reporteremailaddress>${this.escapeXml(data.reporterEmailAddress)}</reporteremailaddress>` : ''}
 ${data.literatureReference ? `<literaturereference>${this.escapeXml(data.literatureReference)}</literaturereference>` : ''}
+${data.studyRegNumber ? `<studyregnumb>${this.escapeXml(data.studyRegNumber)}</studyregnumb>` : ''}
+${data.studyRegCountry ? `<studyregcountry>${this.escapeXml(data.studyRegCountry)}</studyregcountry>` : ''}
 ${data.studyName ? `<studyname>${this.escapeXml(data.studyName)}</studyname>` : ''}
 ${data.sponsorStudyNumber ? `<sponsorstudynumb>${this.escapeXml(data.sponsorStudyNumber)}</sponsorstudynumb>` : ''}
+${data.studyType ? `<studytype>${this.escapeXml(data.studyType)}</studytype>` : ''}
 </primarysource>
 <sender>
 <sendertype>${this.escapeXml(data.senderType || '3')}</sendertype>
@@ -241,6 +250,7 @@ ${data.senderState ? `<senderstate>${this.escapeXml(data.senderState)}</senderst
 ${data.senderPostcode ? `<senderpostcode>${this.escapeXml(data.senderPostcode)}</senderpostcode>` : ''}
 ${data.senderTel ? `<sendertel>${this.escapeXml(data.senderTel)}</sendertel>` : ''}
 ${data.senderEmailAddress ? `<senderemailaddress>${this.escapeXml(data.senderEmailAddress)}</senderemailaddress>` : ''}
+${data.senderFax ? `<senderfax>${this.escapeXml(data.senderFax)}</senderfax>` : ''}
 </sender>
 <receiver>
 <receivertype>${this.escapeXml(data.receiverType || '2')}</receivertype>
@@ -254,11 +264,16 @@ ${data.receiverPostcode ? `<receiverpostcode>${this.escapeXml(data.receiverPostc
 ${data.receiverCountry ? `<receivercountry>${this.escapeXml(data.receiverCountry)}</receivercountry>` : ''}
 ${data.receiverTel ? `<receivertel>${this.escapeXml(data.receiverTel)}</receivertel>` : ''}
 ${data.receiverEmailAddress ? `<receiveremailaddress>${this.escapeXml(data.receiverEmailAddress)}</receiveremailaddress>` : ''}
+${data.receiverFax ? `<receiverfax>${this.escapeXml(data.receiverFax)}</receiverfax>` : ''}
 </receiver>
 <patient>
 ${data.patientInitial ? `<patientinitial>${this.escapeXml(data.patientInitial)}</patientinitial>` : ''}
 ${data.patientBirthdate ? `<patientbirthdate>${this.formatE2BDate(data.patientBirthdate)}</patientbirthdate>` : ''}
 ${data.patientAgeGroup && data.patientAgeGroup.length === 1 ? `<patientagegroup>${this.escapeXml(data.patientAgeGroup)}</patientagegroup>` : ''}
+${data.patientAge ? `<patientonsetage>${this.escapeXml(data.patientAge)}</patientonsetage>` : ''}
+${data.patientAgeUnit ? `<patientonsetageunit>${this.escapeXml(data.patientAgeUnit)}</patientonsetageunit>` : ''}
+${data.gestationPeriod ? `<gestationperiod>${this.escapeXml(data.gestationPeriod)}</gestationperiod>` : ''}
+${data.gestationPeriodUnit ? `<gestationperiodunit>${this.escapeXml(data.gestationPeriodUnit)}</gestationperiodunit>` : ''}
 ${data.patientWeight ? `<patientweight>${this.escapeXml(data.patientWeight)}</patientweight>` : ''}
 ${data.patientHeight ? `<patientheight>${this.escapeXml(data.patientHeight)}</patientheight>` : ''}
 ${data.patientSex ? `<patientsex>${this.escapeXml(data.patientSex)}</patientsex>` : ''}
@@ -276,11 +291,15 @@ ${data.reactionDuration ? `<reactionduration>${this.escapeXml(data.reactionDurat
 ${data.reactionDurationUnit ? `<reactiondurationunit>${this.escapeXml(data.reactionDurationUnit)}</reactiondurationunit>` : ''}
 <reactionoutcome>${this.escapeXml(data.reactionOutcome || '5')}</reactionoutcome>
 </reaction>
-${data.testName ? `<test><testdate>${data.testDate ? this.formatE2BDate(data.testDate) : currentDate}</testdate><testname>${this.escapeXml(data.testName)}</testname>${data.testResult ? `<testresult>${this.escapeXml(data.testResult)}</testresult>` : ''}</test>` : ''}
+${data.testName || data.testResult || data.testDate ? `<test><testdate>${data.testDate ? this.formatE2BDate(data.testDate) : currentDate}</testdate><testname>${this.escapeXml(data.testName || 'Laboratory test')}</testname>${data.testResult ? `<testresult>${this.escapeXml(data.testResult)}</testresult>` : ''}${data.testUnit ? `<testunit>${this.escapeXml(data.testUnit)}</testunit>` : ''}${data.lowtestrange ? `<lowtestrange>${this.escapeXml(data.lowtestrange)}</lowtestrange>` : ''}${data.hightestrange ? `<hightestrange>${this.escapeXml(data.hightestrange)}</hightestrange>` : ''}${data.moreInformation ? `<moreinformation>${this.escapeXml(data.moreInformation)}</moreinformation>` : ''}</test>` : ''}
 <drug>
 <drugcharacterization>${this.escapeXml(data.drugRole || '1')}</drugcharacterization>
 <medicinalproduct>${this.escapeXml(data.medicinalProduct || 'Unknown Drug')}</medicinalproduct>
 ${data.drugBatchNumb ? `<drugbatchnumb>${this.escapeXml(data.drugBatchNumb)}</drugbatchnumb>` : ''}
+${data.drugAuthorizationNumb ? `<drugauthorizationnumb>${this.escapeXml(data.drugAuthorizationNumb)}</drugauthorizationnumb>` : ''}
+${data.drugAuthorizationCountry ? `<drugauthorizationcountry>${this.escapeXml(data.drugAuthorizationCountry)}</drugauthorizationcountry>` : ''}
+${data.drugAuthorizationHolder ? `<drugauthorizationholder>${this.escapeXml(data.drugAuthorizationHolder)}</drugauthorizationholder>` : ''}
+${data.medicinalProductId ? `<medicinalproductid>${this.escapeXml(data.medicinalProductId)}</medicinalproductid>` : ''}
 ${data.drugDosageText ? `<drugdosagetext>${this.escapeXml(data.drugDosageText)}</drugdosagetext>` : '<drugdosagetext>Not specified</drugdosagetext>'}
 ${data.drugDosageForm ? `<drugdosageform>${this.escapeXml(data.drugDosageForm)}</drugdosageform>` : ''}
 <drugadministrationroute>${this.escapeXml(data.drugAdministrationRoute || '065')}</drugadministrationroute>

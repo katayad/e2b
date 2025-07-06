@@ -268,27 +268,9 @@ export class DashboardComponent implements OnInit {
       this.reportsService.createReport(formData.title, formData).subscribe({
         next: (report) => {
           console.log('Report created successfully:', report);
-          this.success = 'Report created successfully!';
           this.isLoading = false;
-          // Reset form after successful submission
-          this.reportForm.reset();
-          this.reportForm.patchValue({
-            primarySourceCountry: 'US',
-            occurCountry: 'US',
-            reporterTitle: 'Dr.',
-            reporterCountry: 'US',
-            patientSex: '1',
-            reactionOutcome: '1',
-            drugAdministrationRoute: '065',
-            actionDrug: '5',
-            drugRecurrence: '3',
-            seriousnessDeath: '2',
-            seriousnessLifeThreatening: '2',
-            seriousnessHospitalization: '2',
-            seriousnessDisabling: '2',
-            seriousnessCongenitalAnomali: '2',
-            seriousnessOther: '2'
-          });
+          // Redirect to the newly created report's detail page
+          this.router.navigate(['/reports', report.id]);
         },
         error: (err) => {
           console.error('Error creating report:', err);
