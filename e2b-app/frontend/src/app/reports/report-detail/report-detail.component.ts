@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { ReportsService } from '../../services/reports.service';
 import { Report } from '../../models/report.model';
 
@@ -18,11 +19,15 @@ export class ReportDetailComponent implements OnInit {
   xmlContent: string | null = null;
   showXmlView = false;
   isLoadingXml = false;
+  isValidating = false;
+  validationResult: any = null;
+  validationError: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private reportsService: ReportsService
+    private reportsService: ReportsService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -151,6 +156,59 @@ export class ReportDetailComponent implements OnInit {
     }
     
     document.body.removeChild(textArea);
+  }
+
+  validateWithFDA(): void {
+    if (!this.report) {
+      this.validationError = 'Report not available for validation';
+      return;
+    }
+
+    this.isValidating = true;
+    this.validationError = null;
+    this.validationResult = null;
+
+    // Call our backend validation endpoint
+    this.http.post(`http://localhost:3000/reports/${this.report.id}/validate`, {}).subscribe({
+      next: (response: any) => {
+        if (response.error) {
+          // Backend returned an error from FDA validation
+          this.validationError = response.message + (response.details ? ': ' + response.details : '');
+        } else {
+          // Successful validation response
+          this.validationResult = response;
+        }
+        this.isValidating = false;
+        console.log('Validation result:', response);
+      },
+      error: (err) => {
+        this.validationError = 'Failed to validate XML: ' + (err.error?.message || err.message || 'Unknown error');
+        this.isValidating = false;
+        console.error('Validation error:', err);
+      }
+    });
+  }
+
+  getValidationStatus(): string {
+    if (!this.validationResult) return '';
+    
+    const errorLines = this.validationResult.errorLines || [];
+    if (errorLines.length === 0) {
+      return 'Valid XML Format';
+    } else {
+      return 'Invalid XML';
+    }
+  }
+
+  getValidationSeverity(): string {
+    if (!this.validationResult) return '';
+    
+    const errorLines = this.validationResult.errorLines || [];
+    if (errorLines.length === 0) {
+      return 'success';
+    } else {
+      return 'error';
+    }
   }
 
   formatValue(value: any): string {

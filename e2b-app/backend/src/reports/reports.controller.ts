@@ -3,6 +3,7 @@ import { ReportsService } from './reports.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'express';
+import axios from 'axios';
 
 @ApiTags('reports')
 @ApiBearerAuth()
@@ -73,5 +74,61 @@ export class ReportsController {
   async remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
     await this.reportsService.delete(id, req.user.userId);
     return { message: 'Report deleted successfully' };
+  }
+
+  @ApiOperation({ summary: 'Validate report XML with FDA' })
+  @ApiResponse({ status: 200, description: 'Validation completed' })
+  @Post(':id/validate')
+  async validateWithFDA(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    try {
+      // Get the XML content for the report
+      const xmlContent = await this.reportsService.getReportContent(id, req.user.userId);
+      
+      // Prepare the validation payload
+      const validationPayload = {
+        xmlString: xmlContent
+      };
+
+      // Make request to FDA validation API
+      const response = await axios.post(
+        'https://faers2-validator.preprod.fda.gov/LSMV/api/e2bvalidator/checkXML',
+        validationPayload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': '*/*',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          timeout: 30000 // 30 second timeout
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('FDA validation error:', error);
+      
+      if (error.response) {
+        // FDA API returned an error response
+        return {
+          error: true,
+          message: `FDA validation failed: ${error.response.status} ${error.response.statusText}`,
+          details: error.response.data
+        };
+      } else if (error.request) {
+        // Request was made but no response received
+        return {
+          error: true,
+          message: 'Failed to connect to FDA validation service',
+          details: 'The FDA validation service may be temporarily unavailable'
+        };
+      } else {
+        // Something else happened
+        return {
+          error: true,
+          message: 'Validation request failed',
+          details: error.message
+        };
+      }
+    }
   }
 }
