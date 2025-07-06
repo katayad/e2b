@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<\!DOCTYPE ichicsr SYSTEM "http://eudravigilance.ema.europa.eu/dtd/icsr21xml.dtd">
+<ichicsr lang="en">
+<ichicsrmessageheader>
+<messagetype>ichicsr</messagetype>
+<messageformatversion>2.1</messageformatversion>
+<messageformatrelease>2.0</messageformatrelease>
+<messagenumb>US-E2BAPP-2025001</messagenumb>
+<messagesenderidentifier>E2B-APP</messagesenderidentifier>
+<messagereceiveridentifier>FDA</messagereceiveridentifier>
+<messagedateformat>204</messagedateformat>
+<messagedate>20250706142000</messagedate>
+</ichicsrmessageheader>
+<safetyreport>
+<safetyreportid>US-E2BAPP-2025001</safetyreportid>
+<receiptdate>20250706</receiptdate>
+<fulfillexpeditecriteria>1</fulfillexpeditecriteria>
+<primarysourcecountry>US</primarysourcecountry>
+<serious>2</serious>
+<primarysource>
+<reportercountry>US</reportercountry>
+<qualification>1</qualification>
+</primarysource>
+<sender>
+<sendertype>3</sendertype>
+<senderorganization>E2B Application</senderorganization>
+</sender>
+<receiver>
+<receivertype>2</receivertype>
+<receiverorganization>FDA</receiverorganization>
+</receiver>
+<patient>
+<reaction>
+<primarysourcereaction>Adverse reaction</primarysourcereaction>
+<reactionstartdate>20250706</reactionstartdate>
+<reactionoutcome>5</reactionoutcome>
+</reaction>
+<drug>
+<drugcharacterization>1</drugcharacterization>
+<medicinalproduct>Unknown Drug</medicinalproduct>
+<drugstartdate>20250706</drugstartdate>
+<drugdosagetext>Not specified</drugdosagetext>
+<drugadministrationroute>065</drugadministrationroute>
+<actiondrug>5</actiondrug>
+<drugrecurrence>
+<drugrecuraction>2</drugrecuraction>
+</drugrecurrence>
+</drug>
+<summary>
+<narrativeincludeclinical>No narrative provided</narrativeincludeclinical>
+</summary>
+</patient>
+</safetyreport>
+</ichicsr>
+EOF < /dev/null
